@@ -301,5 +301,5 @@ if __name__ == '__main__':
     print('time1[-1:-10] = {}'.format(time1[-1:-10]))        # SHOULD return empty list
     print('time1[-1:-10:2] = {}'.format(time1[-1:-10:2]))    # SHOULD return empty list
 
-    time1.savetxt('./test.txt')
-    time2.savetxt('./test2.txt')
+    time1.savetxt('./test_output/test.txt')
+    time2.savetxt('./test_output/test2.txt')

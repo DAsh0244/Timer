@@ -202,3 +202,4 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/windows,linux,python,virtualenv,pycharm,notepadpp
 test*.txt
+/test_output
