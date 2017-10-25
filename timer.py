@@ -38,6 +38,10 @@ def _precision_and_scale(x):
     return magnitude + scale, scale
 
 
+def _not_implemented(file_name):
+    with open(file_name,'r') as f:
+            f.write('method not implemented.\n')
+    
 class TimerBase(object):
     def __init__(self, start, sample_rate, length, precision=None):
         """
@@ -72,12 +76,15 @@ class TimerBase(object):
     def __repr__(self):
         return '"{}" object with dict: {}'.format(type(self).__name__, self.__dict__)
 
-    # def __str__(self):
-    #     return 'Timer Object with start:{}, delta:{}, entries:{}, precision:{}'.format(self._start, self._delta,
-    #                                                                                    self.entries, self._precision)
-
     def set_length(self, length):
         self.entries = int(length)
+    
+    # base methods that MUST be implemented by subclasses
+    def savetxt(self, file_name):
+        _not_implemented(file_name)
+        
+    def savebin(self, file_name):
+        _not_implemented(file_name)
 
 
 class TimerList(TimerBase):
@@ -87,7 +94,7 @@ class TimerList(TimerBase):
     Sacrifices speed for memory footprint. for large time vectors, this may be useful
 
     This is slice-able and index-able for both the positive and negative indices 
-    --may be turned into an iterable generator later.    
+    returns lists
     """
 
     def __init__(self, *args, **kwargs):
@@ -149,6 +156,7 @@ class TimerList(TimerBase):
         saves time vector as a text file for later use with data sets.
         :param file_name: 'path/to/desired/file/<filename>.<ext>'
         """
+        name, ext = os.path.splitext(file_name)
         with open(file_name, 'a') as file:
             for entry in range(0, self.entries):
                 file.write('{:.{width}f}{}'.format(self[entry], '\n', width=self._precision))
@@ -158,10 +166,10 @@ class TimerGenerator(TimerBase):
     """
     Custom timer object designed to generate time vectors from specific characteristics
     as an alternative to using an array to store evenly sampled time-step values. 
-    Sacrifices speed for memory footprint. for large time vectors, this may be useful
-
+    Sacrifices speed for memory footprint. For large time vectors, this may be useful.
+    
     This is slice-able and index-able for both the positive and negative indices 
-    --may be turned into an iterable generator later.    
+    returns iterable generator objects
     """
 
     def __init__(self, *args, **kwargs):
@@ -225,6 +233,7 @@ class TimerGenerator(TimerBase):
         """
         with open(file_name, 'a') as file:
             # noinspection PyTypeChecker
+            # for entry in self.__getitem__(slice(None,None)):
             for entry in self[:]:
                 file.write('{:.{width}f}{}'.format(entry, '\n', width=self._precision))
 
