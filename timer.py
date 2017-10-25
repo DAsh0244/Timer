@@ -10,7 +10,10 @@ License: N/A
 Description: Dynamic timer object used to provide a low memory overhead timer at the cost of computational time 
 """
 
+__all__ = ['Timer', 'TimerList', 'TimerGenerator']
 __version__ = '1.0.0'
+
+import os
 
 def _precision_and_scale(x):
     """
@@ -74,7 +77,7 @@ class TimerBase(object):
                                                                                        self.entries, self._precision)
 
     def __repr__(self):
-        return '"{}" object with dict: {}'.format(type(self).__name__, self.__dict__)
+        return '{} object with dict: {}'.format(type(self).__name__, self.__dict__)
 
     def set_length(self, length):
         self.entries = int(length)
@@ -241,28 +244,31 @@ class TimerGenerator(TimerBase):
 class Timer(object):
     """
     factory pattern for timer objects.    
-    depending on boolean got value generator, will either return a TimerList or Timer Generator object.
+    depending on provided type string, will either return a TimerList or Timer Generator object.
     """
 
     @staticmethod
-    def get_timer(timer_type='list', *args, **kwargs):
-        if 'list' in timer_type.lower():
+    def get_timer(*args, **kwargs):
+        
+        timer_type =  kwargs.pop('timer_type','list').lower()
+        if 'list' == timer_type:
             return TimerList(*args, **kwargs)
-        elif 'gen' in timer_type.lower():
+        elif 'gen' == timer_type:
             return TimerGenerator(*args, **kwargs)
         else:
-            raise TypeError('"timer_type" argument must be either "list" or "gen"')
+            raise TypeError('"timer_type" argument must be either "list" or "gen", not {}'.format(timer_type))
 
 
 if __name__ == '__main__':
     """
     simplified testing setup
     """
-    time1 = Timer.get_timer('list', 0, 200, 100, precision=1)
-    time2 = Timer.get_timer('gen', 0, 200, int(1e7), precision=1)
+    time1 = Timer.get_timer(0, 200, 100, precision=1)
+    time2 = Timer.get_timer( 0, 200, 100, precision=1, timer_type='gen')
 
     print(time1)
     print(repr(time1))
+    print(repr(time2))
 
     # single integer indexing
     print('time1[0] = {}'.format(time1[0]))
@@ -295,8 +301,5 @@ if __name__ == '__main__':
     print('time1[-1:-10] = {}'.format(time1[-1:-10]))        # SHOULD return empty list
     print('time1[-1:-10:2] = {}'.format(time1[-1:-10:2]))    # SHOULD return empty list
 
-    time1.savetxt('../OUTPUT/test.txt')
-    time2.savetxt('../OUTPUT/test2.txt')
-
-    # for i in time2[:]:
-    #     print(i)
+    time1.savetxt('./test.txt')
+    time2.savetxt('./test2.txt')

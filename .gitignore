@@ -201,7 +201,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/windows,linux,python,virtualenv,pycharm,notepadpp
-
-.python_history
-.idea/
-
+test*.txt
