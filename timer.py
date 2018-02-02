@@ -14,6 +14,7 @@ __all__ = ['Timer', 'TimerList', 'TimerGenerator']
 __version__ = '1.0.0'
 
 import os
+from numbers import Integral
 
 def _precision_and_scale(x):
     """
@@ -121,9 +122,9 @@ class TimerList(TimerBase):
             if (start_index is None) and (stop_index is None):
                 steps = range(0, self.entries, index_step)
                 return [round(self._start + (self._delta * step), self._precision) for step in steps]
-            elif (start_index is None) and isinstance(stop_index, int):
+            elif (start_index is None) and isinstance(stop_index, Integral):
                 start_index = 0
-            elif (stop_index is None) and isinstance(start_index, int):
+            elif (stop_index is None) and isinstance(start_index, Integral):
                 stop_index = self.entries
             elif -self.entries > start_index or start_index >= self.entries:
                 raise IndexError('invalid starting index, index must be within range of [{},{})'.format(-self.entries,
@@ -143,7 +144,7 @@ class TimerList(TimerBase):
             steps = range(0, (stop_index - start_index), index_step)
             start = self._start + start_index * self._delta
             return [round(start + (self._delta * step), self._precision) for step in steps]
-        elif isinstance(index, int):
+        elif isinstance(index, Integral):
             if (-self.entries - 1) >= index or index >= self.entries:
                 raise IndexError('Invalid index')
             elif index >= 0:
@@ -196,9 +197,9 @@ class TimerGenerator(TimerBase):
             if (start_index is None) and (stop_index is None):
                 steps = range(0, self.entries, index_step)
                 return (round(self._start + (self._delta * step), self._precision) for step in steps)
-            elif (start_index is None) and isinstance(stop_index, int):
+            elif (start_index is None) and isinstance(stop_index, Integral):
                 start_index = 0
-            elif (stop_index is None) and isinstance(start_index, int):
+            elif (stop_index is None) and isinstance(start_index, Integral):
                 stop_index = self.entries
             elif -self.entries >= start_index or start_index >= self.entries:
                 raise IndexError('invalid starting index, index must be within range of [{},{})'.format(-self.entries,
@@ -218,7 +219,7 @@ class TimerGenerator(TimerBase):
             steps = range(0, (stop_index - start_index), index_step)
             start = self._start + start_index * self._delta
             return (round(start + (self._delta * step), self._precision) for step in steps)
-        elif isinstance(index, int):
+        elif isinstance(index, Integral):
             if (-self.entries - 1) >= index or index >= self.entries:
                 raise IndexError('invalid index')
             elif index >= 0:
@@ -248,9 +249,7 @@ class Timer(object):
     """
 
     @staticmethod
-    def get_timer(*args, **kwargs):
-        
-        timer_type =  kwargs.pop('timer_type','list').lower()
+    def get_timer(timer_type, *args, **kwargs):
         if 'list' == timer_type:
             return TimerList(*args, **kwargs)
         elif 'gen' == timer_type:
